@@ -1,8 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import superagent from 'superagent'
-//import JorAnalyzer from './jorAnalyzer'
-import LeeAnalyzer from './leeAnalyzer'
+import JorAnalyzer from './jorAnalyzer'
 
 export interface ICAnalyzer {
   analyze: (html: string, filePath: string) => string
@@ -14,17 +13,17 @@ class Crowller {
   private filePath = path.resolve(__dirname, '../data/result.json')
 
 
-  async getRawHtml() {
+  private async getRawHtml() {
     const result = await superagent.get(this.url)
     return result.text
   }
 
 
-  writeFile(content: string) {
+  private writeFile(content: string) {
     fs.writeFileSync(this.filePath, JSON.stringify(content))
   }
 
-  async initSpiderProcess() {
+  private async initSpiderProcess() {
     const html = await this.getRawHtml()
     const fileContent = this.analyzer.analyze(html, this.filePath)
     this.writeFile(fileContent)
@@ -37,6 +36,5 @@ class Crowller {
 }
 const url = 'https://www.ruanyifeng.com/blog/2022/04/weekly-issue-203.html'
 
-//const analyzer = new JorAnalyzer()
-const analyzer = new LeeAnalyzer()
+const analyzer = JorAnalyzer.getInstance()
 new Crowller(url, analyzer)

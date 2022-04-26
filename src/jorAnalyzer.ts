@@ -19,6 +19,16 @@ interface ICContent {
 
 // 负责分析
 export default class JorAnalyzer implements ICAnalyzer {
+  private static instance: JorAnalyzer
+
+  static getInstance() { // 单例模式
+    if (!JorAnalyzer.instance) {
+      JorAnalyzer.instance = new JorAnalyzer()
+    }
+
+    return JorAnalyzer.instance
+  }
+
   private getJsonInfo(html: string) {
     const $ = cheerio.load(html)
     const item = $('article.hentry p')
@@ -40,7 +50,7 @@ export default class JorAnalyzer implements ICAnalyzer {
     }
   }
 
-  generateJsonConent(result: ICResult, filePath: string) {
+  private generateJsonConent(result: ICResult, filePath: string) {
     let fileContent: ICContent = {}
     if (fs.existsSync(filePath)) { // 如果文件存在
       fileContent = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
@@ -54,5 +64,7 @@ export default class JorAnalyzer implements ICAnalyzer {
     const fileContent = this.generateJsonConent(info, filePath)
     return JSON.stringify(fileContent)
   }
+
+  private constructor() {}
 
 }
